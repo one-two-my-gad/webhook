@@ -15,7 +15,7 @@ type (
 	// Timestamp is a helper for (un)marhalling time
 	Timestamp time.Time
 
-	// HookMessage is the message we receive from Alertmanager
+	// HookMessage是我们从Alertmanager收到的消息
 	HookMessage struct {
 		Version           string            `json:"version"`
 		GroupKey          string            `json:"groupKey"`
@@ -28,7 +28,7 @@ type (
 		Alerts            []Alert           `json:"alerts"`
 	}
 
-	// Alert is a single alert.
+	// Alert 是单个警报
 	Alert struct {
 		Labels      map[string]string `json:"labels"`
 		Annotations map[string]string `json:"annotations"`
@@ -36,14 +36,14 @@ type (
 		EndsAt      string            `json:"EndsAt,omitempty"`
 	}
 
-	// just an example alert store. in a real hook, you would do something useful
+	// 只是一个警报示例
 	alertStore struct {
 		sync.Mutex
 		capacity int
 		alerts   []*HookMessage
 	}
 )
-
+    //定义路由向以及状态码
 func main() {
 	addr := flag.String("addr", ":8080", "address to listen for webhook")
 	capacity := flag.Int("cap", 64, "capacity of the simple alerts store")
@@ -96,6 +96,7 @@ func (s *alertStore) postHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request body", 400)
 		return
 	}
+	//利用sync库中Locker Mutex互斥锁来检验运行时检查警报
 
 	s.Lock()
 	defer s.Unlock()
